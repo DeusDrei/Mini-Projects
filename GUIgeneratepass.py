@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 import random
+import pyperclip
 
 class GUI():
     def __init__(self):
@@ -29,16 +30,19 @@ class GUI():
         self.special_chars_check.pack(padx=5, pady=5)
 
         self.length_label = tk.Label(self.root, text="Password Length:", font=("Sans", 12))
-        self.length_label.pack()
+        self.length_label.pack(padx=10, pady=10)
 
         self.length_entry = tk.Entry(self.root, font=("Sans", 12))
-        self.length_entry.pack(padx=5, pady=5)
+        self.length_entry.pack(padx=5, pady=10)
 
         self.generate_button = tk.Button(self.root, text="Generate Password", font=("Sans", 12), command=self.generate_pass)
         self.generate_button.pack(padx=10, pady=10)
 
         self.password_label = tk.Label(self.root, text="", font=("Sans", 12))
         self.password_label.pack(padx=20, pady=10)
+
+        self.copy_button = tk.Button(self.root, text="Copy Password", font=("Sans", 12), command=self.copy_password)
+        self.copy_button.pack(padx=10, pady=10)
 
         self.root.mainloop()
 
@@ -103,5 +107,9 @@ class GUI():
             random.shuffle(list1)
             password = "".join(list1)
             self.password_label.config(text=password)
+
+    def copy_password(self):
+        password = self.password_label.cget("text")
+        pyperclip.copy(password)
 
 GUI()
