@@ -1,11 +1,12 @@
 import tkinter as tk
+from tkinter import messagebox
 import random
 
 class GUI():
     def __init__(self):
         self.root = tk.Tk()
         self.root.title("Random Password Generator")
-        self.root.geometry("500x325")
+        self.root.geometry("1000x450") 
 
         self.label = tk.Label(self.root, text="Random Password Generator", font=("Sans", 16))
         self.label.pack(padx=20, pady=10)
@@ -27,8 +28,14 @@ class GUI():
         self.special_chars_check = tk.Checkbutton(self.root, text="Special Characters", font=("Sans", 12), variable=self.special_chars_state)
         self.special_chars_check.pack(padx=5, pady=5)
 
-        self.button = tk.Button(self.root, text="Generate Password", font=("Sans", 16), command=self.generate_pass)
-        self.button.pack(padx=10, pady=10)
+        self.length_label = tk.Label(self.root, text="Password Length:", font=("Sans", 12))
+        self.length_label.pack()
+
+        self.length_entry = tk.Entry(self.root, font=("Sans", 12))
+        self.length_entry.pack(padx=5, pady=5)
+
+        self.generate_button = tk.Button(self.root, text="Generate Password", font=("Sans", 12), command=self.generate_pass)
+        self.generate_button.pack(padx=10, pady=10)
 
         self.password_label = tk.Label(self.root, text="", font=("Sans", 12))
         self.password_label.pack(padx=20, pady=10)
@@ -36,8 +43,34 @@ class GUI():
         self.root.mainloop()
 
     def generate_pass(self):
-        if not any([self.small_letters_state.get(), self.big_letters_state.get(), self.digits_state.get(), self.special_chars_state.get()]):
-            self.password_label.config(text="Please check a box")
+        length = self.length_entry.get().strip()
+        is_length_empty = length == ""
+        is_no_checkbox_checked = (
+            self.small_letters_state.get() == 0 and
+            self.big_letters_state.get() == 0 and
+            self.digits_state.get() == 0 and
+            self.special_chars_state.get() == 0
+        )
+
+        if is_length_empty and is_no_checkbox_checked:
+            messagebox.showerror("Invalid Input", "Please check a box and enter a password length.")
+            return
+
+        if is_length_empty:
+            messagebox.showerror("Invalid Input", "Please enter a password length.")
+            return
+        
+        if is_no_checkbox_checked:
+            messagebox.showerror("Invalid Input", "Please check a box")
+
+        if not length.isdigit():
+            messagebox.showerror("Invalid Input", "Please enter a valid number for the password length.")
+            return
+
+        length = int(length)
+
+        if length < 4:
+            messagebox.showerror("Invalid Input", "Please enter a number greater than or equal to 4.")
             return
 
         list1 = []
@@ -47,27 +80,28 @@ class GUI():
         nums = "1234567890"
         specha = "_?!+=-#*"
 
-        if self.small_letters_state.get() == 1:
-            list1.append(random.choice(wordssmall))
-            list2 += wordssmall
-        if self.big_letters_state.get() == 1:
-            list1.append(random.choice(wordsbig))
-            list2 += wordsbig
-        if self.digits_state.get() == 1:
-            list1.append(random.choice(nums))
-            list2 += nums
-        if self.special_chars_state.get() == 1:
-            list1.append(random.choice(specha))
-            list2 += specha
+        if length >= 4:
+            if self.small_letters_state.get() == 1:
+                list1.append(random.choice(wordssmall))
+                list2 += wordssmall
+            if self.big_letters_state.get() == 1:
+                list1.append(random.choice(wordsbig))
+                list2 += wordsbig
+            if self.digits_state.get() == 1:
+                list1.append(random.choice(nums))
+                list2 += nums
+            if self.special_chars_state.get() == 1:
+                list1.append(random.choice(specha))
+                list2 += specha
 
-        total = 8 - len(list1)
+            total = length - len(list1)
 
-        for i in range(total):
-            gen = random.choice(list2)
-            list1.append(gen)
+            for i in range(total):
+                gen = random.choice(list2)
+                list1.append(gen)
 
-        random.shuffle(list1)
-        password = "".join(list1)
-        self.password_label.config(text=password)
+            random.shuffle(list1)
+            password = "".join(list1)
+            self.password_label.config(text=password)
 
 GUI()
